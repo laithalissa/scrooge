@@ -12,18 +12,23 @@ def ingest_csv(name):
         return [row for row in reader]
 
 
-csv_files = [
-    f for f in os.listdir(CSV_PATH_PREFIX)
-    if os.path.isfile(os.path.join(CSV_PATH_PREFIX, f))
-    and f.endswith('.csv')
-]
+def discover_csvs(path):
+    return [
+        f for f in os.listdir(path)
+        if os.path.isfile(os.path.join(path, f))
+        and f.endswith('.csv')
+    ]
+
+csv_files = discover_csvs(CSV_PATH_PREFIX)
 recipients_files = [f for f in csv_files if not f.endswith(BUDGET_FILE_NAME)]
 
 recipients = {}
 for filename in recipients_files:
-    recipients[(filename.split('.csv')[0])] = (
-        ingest_csv(os.path.join(CSV_PATH_PREFIX, filename))
-    )
+    item_list = ingest_csv(os.path.join(CSV_PATH_PREFIX, filename))
+    recipient_name = filename.split('.csv')[0]
+    for item in item_list:
+        item['recipient'] =  recipient_name
+    recipients[recipient_name] = item_list
 
 
 for recipient, items in recipients.items():
