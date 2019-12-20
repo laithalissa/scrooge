@@ -9,7 +9,7 @@ project_dir = os.path.join(os.path.dirname(__file__), '..')
 CSV_PATH_PREFIX = os.path.join(project_dir, './res/csv/')
 BUDGET_FILE_NAME = 'Budget.csv'
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.INFO, filename='scrooge.log', filemode='w')
 logger = logging.getLogger(__name__)
 
 
@@ -79,25 +79,28 @@ for filename in shopping_list_files:
     shopping_lists[recipient_name] = item_list
 
 
-for recipient_name, item_list in shopping_lists.items():
-    for item in item_list:
-        # Buying something for yourself doesn't affect the budget/debts
-        if item['Buyer'] == recipient_name:
-            logger.info('Skipping "%s" as buyer "%s" is also the recipient', item['Present'], item['Buyer'])
-            continue
+def update_budgets(_shopping_lists, _budgets):
+    for recipient_name, item_list in shopping_lists.items():
+        for item in item_list:
+            logger.debug('Item "%s" buyer "%s"', item['Present'], item['Buyer'])
+            # Buying something for yourself doesn't affect the budget/debts
+            if item['Buyer'] == recipient_name:
+                logger.info('Skipping "%s" as buyer "%s" is also the recipient', item['Present'], item['Buyer'])
+                continue
 
-        if item['Buyer'] not in budgets:
-            logger.info('Skipping "%s" as Buyer "%s" has no budget', item['Present'], item['Buyer'])
-            continue
+            if item['Buyer'] not in budgets:
+                logger.info('Skipping "%s" as Buyer "%s" has no budget', item['Present'], item['Buyer'])
+                continue
 
-        logger.info('Item "%s" buyer "%s"', item['Present'], item['Buyer'])
-        budgets[item['Buyer']][recipient_name] -= Decimal(item['Cost'])
+            budgets[item['Buyer']][recipient_name] -= Decimal(item['Cost'])
+    return _budgets
 
 def print_budget(budget_table):
     for person, budget_map in budget_table.items():
         print("=== %s ===" % person)
         for owed_person, amount in budget_map.items():
-            print("%s: %s" % (owed_person.ljust(10), amount))
+            print("%s: %s" % (owed_person.ljust(7), amount))
 
 logging.shutdown()
-print_budget(budgets)
+new_budget = update_budgets(shopping_lists, budgets)
+print_budget(new_budget)
