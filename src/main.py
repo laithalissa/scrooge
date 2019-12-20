@@ -3,7 +3,7 @@ import os
 import sys
 
 project_dir = os.path.join(os.path.dirname(__file__), '..')
-CSV_PATH_PREFIX = os.path.join(project_dir, './res/person/')
+CSV_PATH_PREFIX = os.path.join(project_dir, './res/csv/')
 BUDGET_FILE_NAME = 'Budget.csv'
 
 def ingest_csv(name):
@@ -17,18 +17,16 @@ csv_files = [
     if os.path.isfile(os.path.join(CSV_PATH_PREFIX, f))
     and f.endswith('.csv')
 ]
-people_files = [f for f in csv_files if not f.endswith(BUDGET_FILE_NAME)]
+recipients_files = [f for f in csv_files if not f.endswith(BUDGET_FILE_NAME)]
 
-people = {}
-for filename in people_files:
-    people[(filename.split('.csv')[0])] = (
+recipients = {}
+for filename in recipients_files:
+    recipients[(filename.split('.csv')[0])] = (
         ingest_csv(os.path.join(CSV_PATH_PREFIX, filename))
     )
 
 
-
-for person, items in people.items():
-    print(person)
+for recipient, items in recipients.items():
     writer = csv.DictWriter(sys.stdout, fieldnames=items[0].keys())
     for item in items:
         writer.writerow(item)
@@ -39,7 +37,7 @@ for person, items in people.items():
 # presents = ingest_csv()
 # print(presents)
 
-# people = [
+# recipients = [
 #     'Laith',
 #     'Abi',
 #     'David'
@@ -48,7 +46,7 @@ for person, items in people.items():
 # errors = []
 # for p in presents:
 #     for field in ['buyer', 'receiver', 'giver']:
-#         if getattr(p, field) not in people:
+#         if getattr(p, field) not in recipients:
 #             errors.append(
 #                 f'Unexpected {field} in {p.__dict__}'
 #             )
