@@ -19,6 +19,15 @@ def discover_csvs(path):
         and f.endswith('.csv')
     ]
 
+
+def csv_output(recipients_dict):
+    for recipient, items in recipients_dict.items():
+        if not items:
+            continue
+        print(f'=========== {recipient} ===========')
+        writer = csv.DictWriter(sys.stdout, fieldnames=items[0].keys())
+        writer.writerows(items)
+
 csv_files = discover_csvs(CSV_PATH_PREFIX)
 recipients_files = [f for f in csv_files if not f.endswith(BUDGET_FILE_NAME)]
 
@@ -30,12 +39,6 @@ for filename in recipients_files:
         item['recipient'] =  recipient_name
     recipients[recipient_name] = item_list
 
-
-for recipient, items in recipients.items():
-    writer = csv.DictWriter(sys.stdout, fieldnames=items[0].keys())
-    for item in items:
-        writer.writerow(item)
-    writer.writerows(items)
 
 
 
