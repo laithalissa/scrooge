@@ -21,6 +21,23 @@ def update_budgets(shopping_lists, budgets):
             budgets[item['Buyer']][recipient_name] -= Decimal(item['Cost'])
     return budgets
 
+def cost_of_items_by_buyer(shopping_lists):
+    cost_map = {}
+    for recipient_name, item_list in shopping_lists.items():
+        for item in item_list:
+            logger.debug('Item "%s" buyer "%s" recipient "%s"', item['Present'], item['Buyer'], recipient_name)
+            # Buying something for yourself doesn't affect the budget/debts
+            if item['Buyer'] == item['Giver'] == recipient_name:
+                logger.info(
+                    'Skipping "%s" as buyer "%s", giver and recipient are the same',
+                    item['Present'],
+                    item['Buyer']
+                )
+                continue
+
+            cost_map[item['Buyer']] = str(Decimal(cost_map.get(item['Buyer'], 0)) + Decimal(item['Cost']))
+    return cost_map
+
 def unpack_shared_item(item):
     givers = item['Giver'].split('|')
     if len(givers) == 1:
@@ -81,3 +98,9 @@ def calculate_credit_and_debt(shopping_lists, budgets):
     for recipient_name, budget_map in new_budget.items():
         debt_map[recipient_name] = str(sum(budget_map.values()))
     return debt_map
+
+def total_budget_per_person(budgets):
+    condensed_budget = {}
+    for recipient_name, budget_map in budgets.items():
+        condensed_budget[recipient_name] = str(sum(budget_map.values()))
+    return condensed_budget

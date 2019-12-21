@@ -45,13 +45,46 @@ def append_section(_sections, _title, _result):
 
 
 sections = []
-result = calculate_credit_and_debt(
-    original_shopping_lists(),
-    original_budget()
+sections = append_section(
+    sections,
+    'Original Budget',
+    total_budget_per_person(original_budget())
 )
-sections = append_section(sections, 'Credit/Debts', result)
 
-result = calculate_grand_totals_for_givers(original_shopping_lists())
-table = json2html.convert(json=result, table_attributes='class="table"')
-sections = append_section(sections, 'Giver totals', result)
+# sections = append_section(
+#     sections,
+#     'Budget minus cost of purchases',
+#     calculate_credit_and_debt(
+#         original_shopping_lists(),
+#         original_budget()
+#     )
+# )
+
+cost_of_purchases = cost_of_items_by_buyer(
+    original_shopping_lists()
+)
+sections = append_section(
+    sections,
+    'Cost of purchases (grouped by buyer)',
+    cost_of_purchases
+)
+
+cost_of_gifts_given = calculate_grand_totals_for_givers(original_shopping_lists())
+sections = append_section(
+    sections,
+    'Cost of gifts given',
+    cost_of_gifts_given
+)
+
+debt_credit = copy.deepcopy(cost_of_purchases)
+for name, cost in cost_of_gifts_given.items():
+    debt_credit[name] = str(Decimal(debt_credit.get(name, 0)) - Decimal(cost))
+
+sections = append_section(
+    sections,
+    'Debt/Credit',
+    debt_credit
+)
+
+print(sum([Decimal(d) for d in debt_credit.values()]))
 render_report(sections)
