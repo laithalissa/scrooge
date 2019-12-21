@@ -8,34 +8,36 @@ logger = logging.getLogger(__name__)
 def update_budgets(shopping_lists, budgets):
     for recipient_name, item_list in shopping_lists.items():
         for item in item_list:
-            logger.debug('Item "%s" buyer "%s" recipient "%s"', item['Present'], item['Buyer'], recipient_name)
+            buyer = item['Buyer']
+            logger.debug('Item "%s" buyer "%s" recipient "%s"', item['Present'], buyer, recipient_name)
             # Buying something for yourself doesn't affect the budget/debts
-            if item['Buyer'] == recipient_name:
-                logger.info('Skipping "%s" as buyer "%s" is also the recipient', item['Present'], item['Buyer'])
+            if buyer == recipient_name:
+                logger.info('Skipping "%s" as buyer "%s" is also the recipient', item['Present'], buyer)
                 continue
 
-            if item['Buyer'] not in budgets:
-                logger.info('Skipping "%s" as Buyer "%s" has no budget', item['Present'], item['Buyer'])
+            if buyer not in budgets:
+                logger.info('Skipping "%s" as Buyer "%s" has no budget', item['Present'], buyer)
                 continue
 
-            budgets[item['Buyer']][recipient_name] -= Decimal(item['Cost'])
+            budgets[buyer][recipient_name] -= Decimal(item['Cost'])
     return budgets
 
 def cost_of_items_by_buyer(shopping_lists):
     cost_map = {}
     for recipient_name, item_list in shopping_lists.items():
         for item in item_list:
-            logger.debug('Item "%s" buyer "%s" recipient "%s"', item['Present'], item['Buyer'], recipient_name)
+            buyer = item['Buyer']
+            logger.debug('Item "%s" buyer "%s" recipient "%s"', item['Present'], buyer, recipient_name)
             # Buying something for yourself doesn't affect the budget/debts
-            if item['Buyer'] == item['Giver'] == recipient_name:
+            if buyer == item['Giver'] == recipient_name:
                 logger.info(
                     'Skipping "%s" as buyer "%s", giver and recipient are the same',
                     item['Present'],
-                    item['Buyer']
+                    buyer
                 )
                 continue
 
-            cost_map[item['Buyer']] = str(Decimal(cost_map.get(item['Buyer'], 0)) + Decimal(item['Cost']))
+            cost_map[buyer] = str(Decimal(cost_map.get(buyer, 0)) + Decimal(item['Cost']))
     return cost_map
 
 def unpack_shared_item(item):
@@ -92,7 +94,7 @@ def calculate_recipient_totals_for_givers(shopping_lists):
     return recipient_reports
 
 
-def calculate_credit_and_debt(shopping_lists, budgets):
+def budget_minus_cost_of_items(shopping_lists, budgets):
     new_budget = update_budgets(copy.deepcopy(shopping_lists), copy.deepcopy(budgets))
     debt_map = {}
     for recipient_name, budget_map in new_budget.items():

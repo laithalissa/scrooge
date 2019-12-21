@@ -86,5 +86,5 @@ sections = append_section(
     debt_credit
 )
 
-print(sum([Decimal(d) for d in debt_credit.values()]))
+# print(sum([Decimal(d) for d in debt_credit.values()]))
 render_report(sections)
