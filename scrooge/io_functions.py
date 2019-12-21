@@ -68,6 +68,7 @@ def print_budget(budget_table):
         for owed_person, amount in budget_map.items():
             print("%s: %s" % (owed_person.ljust(7), amount))
 
+
 def render_report(sections):
     loader = jinja2.FileSystemLoader(searchpath=config.TEMPLATES_DIR)
     env = jinja2.Environment(loader=loader)

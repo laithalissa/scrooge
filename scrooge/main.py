@@ -1,6 +1,6 @@
 from scrooge.config import *
 from scrooge.calculations import *
-from scrooge.io import *
+from scrooge.io_functions import *
 
 from json2html import json2html
 
