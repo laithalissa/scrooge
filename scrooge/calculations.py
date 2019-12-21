@@ -41,7 +41,7 @@ def cost_of_items_by_buyer(shopping_lists):
     return cost_map
 
 def unpack_shared_item(item):
-    givers = item['Giver'].split('|')
+    givers = item['Giver'].split('_')
     if len(givers) == 1:
         return [item]
 
