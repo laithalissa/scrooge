@@ -69,10 +69,47 @@ def print_budget(budget_table):
             print("%s: %s" % (owed_person.ljust(7), amount))
 
 
-def render_report(sections):
-    loader = jinja2.FileSystemLoader(searchpath=config.TEMPLATES_DIR)
-    env = jinja2.Environment(loader=loader)
-    template = env.get_template("Report.html")
-    output = template.render(sections=sections)
+loader = jinja2.FileSystemLoader(searchpath=config.TEMPLATES_DIR)
+env = jinja2.Environment(loader=loader)
+
+def generate_table_html(top_headings, left_headings, table_rows):
+    template = env.get_template("table.html")
+    table_rows = [{'title': i[0], 'values': i[1]} for i in zip(left_headings, table_rows)]
+    output = template.render({
+        'headings': top_headings,
+        'rows': table_rows
+    })
+    return output
+
+def generate_supertable(*subtables):
+    all_keys = set()
+    for d in subtables:
+        all_keys.update(d['data'].keys())
+
+    all_keys = sorted(list(all_keys))
+    table_headings = []
+    table_data = []
+    for d in subtables:
+        table_headings.append(d['title'])
+        column = []
+        for key in all_keys:
+            column.append(d['data'].get(key, '-'))
+        table_data.append(column)
+
+    table_rows = []
+    for col_number in range(len(all_keys)):
+        row = []
+        for row_number in range(len(subtables)):
+            row.append(
+                table_data[row_number][col_number]
+            )
+        table_rows.append(row)
+
+    return generate_table_html(table_headings, all_keys, table_rows)
+
+
+def render_report(table):
+    template = env.get_template("report.html")
+    output = template.render(table=table)
     with open(config.PROJECT_DIR + config.REPORT_FILENAME, 'w') as f:
         f.write(output)

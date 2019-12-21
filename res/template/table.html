@@ -1,0 +1,27 @@
+<table class="table">
+    <thead>
+    <tr>
+        <th></th>
+        {% for heading in headings %}
+        <th>
+            {{ heading }}
+        </th>
+        {% endfor %}
+    </tr>
+    </thead>
+    <tbody>
+        {% for row in rows %}
+        <tr>
+            <th>
+                {{ row["title"] }}
+            </th>
+            {% for value in row["values"] %}
+            <td>
+                {{ value }}
+            </td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+

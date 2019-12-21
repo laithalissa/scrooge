@@ -86,5 +86,11 @@ sections = append_section(
     debt_credit
 )
 
+table = generate_supertable(
+    {'title': 'Cost of Purchases', 'data': cost_of_purchases},
+    {'title': 'Cost of gifts given', 'data': cost_of_gifts_given},
+    {'title': 'Debt/Credit', 'data': debt_credit},
+)
+
 # print(sum([Decimal(d) for d in debt_credit.values()]))
-render_report(sections)
+render_report(table)

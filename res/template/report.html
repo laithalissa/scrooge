@@ -8,21 +8,31 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <style>
-    td {
+    h1, td, th {
       text-align: center;
     }
+    h1 {
+      display: inline-block;
+    }
+    .titlebar {
+        width: 50%;
+        margin: auto;
+    }
+    img {
+      vertical-align: middle;
+      max-height: 50px;
+    }
     </style>
-    <title>Hello, world!</title>
+    <title>Scrooge</title>
   </head>
   <body>
-    <h1>Scrooge summary</h1>
+    <div class="titlebar">
+      <img src="https://www.disneyclips.com/images3/images/scrooge-mcduck3.png"/>
+      <h1>Scrooge summary</h1>
+      <img src="https://www.disneyclips.com/images3/images/scrooge-mcduck3.png"/>
+    </div>
     <div class="container">
-      {% for section in sections %}
-      <div class="col">
-        <h2>{{ section.title }}</h2>
-        {{ section.body }}
-      </div>
-      {% endfor %}
+      {{ table }}
     </div>
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
