@@ -1,4 +1,5 @@
-from scrooge.functions import *
+from scrooge.calculations import *
+from scrooge.io import *
 
 logging.basicConfig(level=logging.DEBUG, filename='scrooge.log', filemode='w')
 logger = logging.getLogger(__name__)
