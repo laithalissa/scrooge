@@ -1,14 +1,11 @@
 import copy
-import csv
 import logging
-import os
-import sys
 
+import decimal
 from decimal import Decimal
 
 logger = logging.getLogger(__name__)
-
-
+# decimal.getcontext().prec = 2
 
 def update_budgets(shopping_lists, budgets):
     for recipient_name, item_list in shopping_lists.items():
@@ -26,8 +23,34 @@ def update_budgets(shopping_lists, budgets):
             budgets[item['Buyer']][recipient_name] -= Decimal(item['Cost'])
     return budgets
 
+def unpack_shared_item(item):
+    givers = item['Giver'].split('|')
+    if len(givers) == 1:
+        return [item]
+
+    split_cost = round(Decimal(item['Cost'])/len(givers), 2)
+    multipack = []
+    for giver in givers:
+        sub_item = copy.copy(item)
+        sub_item['Cost'] = split_cost
+        sub_item['Giver'] = giver
+        multipack.append(sub_item)
+    return multipack
+
+def replace_unpacked_items(shopping_lists):
+    new_lists = {}
+    for recipient_name, item_list in shopping_lists.items():
+        sharded_items = [
+            unpack_shared_item(item)
+            for item in item_list
+        ]
+        flat_list = [item for sublist in sharded_items for item in sublist]
+        new_lists[recipient_name] = flat_list
+
+    return new_lists
 
 def calculate_totals_for_givers(shopping_lists):
+    shopping_lists = replace_unpacked_items(shopping_lists)
     recipient_reports = {}
     for recipient_name, item_list in shopping_lists.items():
         givers_spending = {}
