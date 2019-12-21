@@ -1,3 +1,4 @@
+import copy
 import csv
 import logging
 import os
@@ -5,13 +6,7 @@ import sys
 
 from decimal import Decimal
 
-project_dir = os.path.join(os.path.dirname(__file__), '..')
-CSV_PATH_PREFIX = os.path.join(project_dir, './res/csv/')
-BUDGET_FILE_NAME = 'Budget.csv'
-
-logging.basicConfig(level=logging.INFO, filename='scrooge.log', filemode='w')
 logger = logging.getLogger(__name__)
-
 
 def ingest_recipient_csv(name):
     with open(name, 'r') as csvfile:
@@ -46,12 +41,13 @@ def ingest_budget_file(filepath):
 
         # Replace - with 0
         for row_index, row in enumerate(budget_table):
+            logger.debug(f'Row: {row}')
             for col_index, col_value in enumerate(row):
                 if col_value == '-':
                     budget_table[row_index][col_index] = 0
                 elif row_index == 0 or col_index == 0:
                     continue
-
+                logger.debug(f'col value: {col_value}')
                 budget_table[row_index][col_index] = Decimal(
                     budget_table[row_index][col_index]
                 )
@@ -66,23 +62,10 @@ def ingest_budget_file(filepath):
         }
 
 
-budgets = ingest_budget_file(os.path.join(CSV_PATH_PREFIX, BUDGET_FILE_NAME))
-csv_files = discover_csvs(CSV_PATH_PREFIX)
-shopping_list_files = [f for f in csv_files if not f.endswith(BUDGET_FILE_NAME)]
-
-shopping_lists = {}
-for filename in shopping_list_files:
-    item_list = ingest_recipient_csv(os.path.join(CSV_PATH_PREFIX, filename))
-    recipient_name = filename.split('.csv')[0]
-    for item in item_list:
-        item['recipient'] =  recipient_name
-    shopping_lists[recipient_name] = item_list
-
-
-def update_budgets(_shopping_lists, _budgets):
+def update_budgets(shopping_lists, budgets):
     for recipient_name, item_list in shopping_lists.items():
         for item in item_list:
-            logger.debug('Item "%s" buyer "%s"', item['Present'], item['Buyer'])
+            logger.debug('Item "%s" buyer "%s" recipient "%s"', item['Present'], item['Buyer'], recipient_name)
             # Buying something for yourself doesn't affect the budget/debts
             if item['Buyer'] == recipient_name:
                 logger.info('Skipping "%s" as buyer "%s" is also the recipient', item['Present'], item['Buyer'])
@@ -93,7 +76,7 @@ def update_budgets(_shopping_lists, _budgets):
                 continue
 
             budgets[item['Buyer']][recipient_name] -= Decimal(item['Cost'])
-    return _budgets
+    return budgets
 
 def print_budget(budget_table):
     for person, budget_map in budget_table.items():
@@ -101,6 +84,23 @@ def print_budget(budget_table):
         for owed_person, amount in budget_map.items():
             print("%s: %s" % (owed_person.ljust(7), amount))
 
-logging.shutdown()
-new_budget = update_budgets(shopping_lists, budgets)
-print_budget(new_budget)
+def calculate_totals_for_givers(shopping_lists):
+    recipient_reports = {}
+    for recipient_name, item_list in shopping_lists.items():
+        givers_spending = {}
+        for item in item_list:
+            giver = item['Giver']
+            # Buying yourself something doesn't mean you get repaid!
+            if recipient_name == giver:
+                continue
+            givers_spending[giver] = str(Decimal(givers_spending.get(giver, 0)) + Decimal(item['Cost']))
+        recipient_reports[recipient_name] = givers_spending
+    return recipient_reports
+
+
+def calculate_credit_and_debt(shopping_lists, budgets):
+    new_budget = update_budgets(copy.deepcopy(shopping_lists), copy.deepcopy(budgets))
+    debt_map = {}
+    for recipient_name, budget_map in new_budget.items():
+        debt_map[recipient_name] = str(sum(budget_map.values()))
+    return debt_map
