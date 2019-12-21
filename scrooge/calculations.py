@@ -5,7 +5,7 @@ from decimal import Decimal
 
 logger = logging.getLogger(__name__)
 
-def update_budgets(shopping_lists, budgets):
+def subtract_purchases_from_budget(shopping_lists, budgets):
     for recipient_name, item_list in shopping_lists.items():
         for item in item_list:
             buyer = item['Buyer']
@@ -95,7 +95,7 @@ def calculate_recipient_totals_for_givers(shopping_lists):
 
 
 def budget_minus_cost_of_items(shopping_lists, budgets):
-    new_budget = update_budgets(copy.deepcopy(shopping_lists), copy.deepcopy(budgets))
+    new_budget = subtract_purchases_from_budget(copy.deepcopy(shopping_lists), copy.deepcopy(budgets))
     debt_map = {}
     for recipient_name, budget_map in new_budget.items():
         debt_map[recipient_name] = str(sum(budget_map.values()))
