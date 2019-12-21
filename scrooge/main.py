@@ -1,12 +1,12 @@
+from scrooge.config import *
 from scrooge.calculations import *
 from scrooge.io import *
+
+from json2html import json2html
 
 logging.basicConfig(level=logging.DEBUG, filename='scrooge.log', filemode='w')
 logger = logging.getLogger(__name__)
 
-project_dir = os.path.join(os.path.dirname(__file__), '..')
-CSV_PATH_PREFIX = os.path.join(project_dir, './res/csv/')
-BUDGET_FILE_NAME = 'Budget.csv'
 
 budgets = ingest_budget_file(os.path.join(CSV_PATH_PREFIX, BUDGET_FILE_NAME))
 csv_files = discover_csvs(CSV_PATH_PREFIX)
@@ -26,9 +26,9 @@ from pprint import pprint
 # new_budget = update_budgets(copy.deepcopy(shopping_lists), copy.deepcopy(budgets))
 # pprint(new_budget)
 # print_budget(new_budget)
-from json2html import *
+
+
 result = calculate_grand_totals_for_givers(copy.deepcopy(shopping_lists))
-table = json2html.convert(json=result)
-with open(project_dir + '/out.html', 'w') as f:
-    f.write(table)
-#pprint(calculate_credit_and_debt(copy.deepcopy(shopping_lists)))
+table = json2html.convert(json=result, table_attributes='class="table"')
+
+sections=[{'title': 'Giver totals', 'body': table}]

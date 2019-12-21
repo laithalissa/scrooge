@@ -2,6 +2,7 @@ import csv
 import os
 import logging
 import sys
+import jinja2
 from decimal import Decimal
 
 logger = logging.getLogger(__name__)
@@ -64,3 +65,13 @@ def print_budget(budget_table):
         print("=== %s ===" % person)
         for owed_person, amount in budget_map.items():
             print("%s: %s" % (owed_person.ljust(7), amount))
+
+def render_html(sections):
+    loader = jinja2.FileSystemLoader(searchpath=project_dir + "/res/template/")
+    env = jinja2.Environment(loader=loader)
+    template = env.get_template("index.html")
+    outputText = template.render(
+        sections=sections
+    )
+    with open(project_dir + '/out.html', 'w') as f:
+        f.write(outputText)

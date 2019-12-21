@@ -1,11 +1,9 @@
 import copy
 import logging
 
-import decimal
 from decimal import Decimal
 
 logger = logging.getLogger(__name__)
-# decimal.getcontext().prec = 2
 
 def update_budgets(shopping_lists, budgets):
     for recipient_name, item_list in shopping_lists.items():
