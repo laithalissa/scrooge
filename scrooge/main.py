@@ -26,5 +26,9 @@ from pprint import pprint
 # new_budget = update_budgets(copy.deepcopy(shopping_lists), copy.deepcopy(budgets))
 # pprint(new_budget)
 # print_budget(new_budget)
-pprint(calculate_totals_for_givers(copy.deepcopy(shopping_lists)))
+from json2html import *
+result = calculate_grand_totals_for_givers(copy.deepcopy(shopping_lists))
+table = json2html.convert(json=result)
+with open(project_dir + '/out.html', 'w') as f:
+    f.write(table)
 #pprint(calculate_credit_and_debt(copy.deepcopy(shopping_lists)))

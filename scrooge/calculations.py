@@ -49,7 +49,20 @@ def replace_unpacked_items(shopping_lists):
 
     return new_lists
 
-def calculate_totals_for_givers(shopping_lists):
+
+def calculate_grand_totals_for_givers(shopping_lists):
+    shopping_lists = replace_unpacked_items(shopping_lists)
+    givers_spending = {}
+    for recipient_name, item_list in shopping_lists.items():
+        for item in item_list:
+            giver = item['Giver']
+            # Buying yourself something doesn't mean you get repaid!
+            if recipient_name == giver:
+                continue
+            givers_spending[giver] = str(Decimal(givers_spending.get(giver, 0)) + Decimal(item['Cost']))
+    return givers_spending
+
+def calculate_recipient_totals_for_givers(shopping_lists):
     shopping_lists = replace_unpacked_items(shopping_lists)
     recipient_reports = {}
     for recipient_name, item_list in shopping_lists.items():
