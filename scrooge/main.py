@@ -27,8 +27,31 @@ from pprint import pprint
 # pprint(new_budget)
 # print_budget(new_budget)
 
+def original_shopping_lists():
+    return copy.deepcopy(shopping_lists)
 
-result = calculate_grand_totals_for_givers(copy.deepcopy(shopping_lists))
+def original_budget():
+    return copy.deepcopy(budgets)
+
+def append_section(_sections, _title, _result):
+    _sections.append({
+        'title': _title,
+        'body': json2html.convert(
+            json=_result,
+            table_attributes='class="table"'
+        )
+    })
+    return _sections
+
+
+sections = []
+result = calculate_credit_and_debt(
+    original_shopping_lists(),
+    original_budget()
+)
+sections = append_section(sections, 'Credit/Debts', result)
+
+result = calculate_grand_totals_for_givers(original_shopping_lists())
 table = json2html.convert(json=result, table_attributes='class="table"')
-
-sections=[{'title': 'Giver totals', 'body': table}]
+sections = append_section(sections, 'Giver totals', result)
+render_report(sections)

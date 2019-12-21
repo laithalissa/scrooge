@@ -5,6 +5,8 @@ import sys
 import jinja2
 from decimal import Decimal
 
+from scrooge import config
+
 logger = logging.getLogger(__name__)
 
 def ingest_recipient_csv(name):
@@ -66,12 +68,10 @@ def print_budget(budget_table):
         for owed_person, amount in budget_map.items():
             print("%s: %s" % (owed_person.ljust(7), amount))
 
-def render_html(sections):
-    loader = jinja2.FileSystemLoader(searchpath=project_dir + "/res/template/")
+def render_report(sections):
+    loader = jinja2.FileSystemLoader(searchpath=config.TEMPLATES_DIR)
     env = jinja2.Environment(loader=loader)
-    template = env.get_template("index.html")
-    outputText = template.render(
-        sections=sections
-    )
-    with open(project_dir + '/out.html', 'w') as f:
-        f.write(outputText)
+    template = env.get_template("Report.html")
+    output = template.render(sections=sections)
+    with open(config.PROJECT_DIR + config.REPORT_FILENAME, 'w') as f:
+        f.write(output)
