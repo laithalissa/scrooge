@@ -1,4 +1,6 @@
 Present,Cost,Buyer,Giver
-Wetsuit Boots,24.99,Abi,Abi|Laith|Rachel|Ryan|David|Chris|Connie
-Wetsuit Gloves,29.95,Abi,?
-Fudge,5,Rachel,Abi|Laith|Rachel|Ryan|David|Chris|Connie
+Wetsuit Boots,24.99,Abi,Abi_Laith_Rachel_Ryan_David_Chris_Connie
+Wetsuit Gloves,29.95,Abi,Abi_Laith_Rachel_Ryan_David_Chris_Connie
+Fudge,5,Rachel,Abi_Laith_Rachel_Ryan_David_Chris_Connie
+Chai tea,6,Ruth,Abi_Laith_Rachel_Ryan_David_Chris_Connie
+Truffles,4.06,Rachel,Abi_Laith_Rachel_Ryan_David_Chris_Connie
