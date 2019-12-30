@@ -82,18 +82,38 @@ def generate_table_html(top_headings, left_headings, table_rows):
     return output
 
 def generate_supertable(*subtables):
+    """
+    Given a variable number of subtables, reformat the data
+    so it can be rendered into one table. A subtable is simply
+    a dictionary which looks like:
+    {
+      'title': 'Cost of Presents',
+      'data': {
+          'Laith': '4',
+          'Abi'. '5.99'
+       }
+    }
+
+    Subtables are then rendered as one big table, with missing
+    keys filled in with a default value
+    """
+    DEFAULT_VALUE = '-'
+    # Build a set of all "names" to appear on the left of the table
     all_keys = set()
     for d in subtables:
         all_keys.update(d['data'].keys())
 
+    # Sort the keys so there's a standard order
     all_keys = sorted(list(all_keys))
+    # Create a list of table headings to pass to the template...
     table_headings = []
+    # ... and a list for the colums, in matching order
     table_data = []
     for d in subtables:
         table_headings.append(d['title'])
         column = []
         for key in all_keys:
-            column.append(d['data'].get(key, '-'))
+            column.append(d['data'].get(key, DEFAULT_VALUE))
         table_data.append(column)
 
     table_rows = []
