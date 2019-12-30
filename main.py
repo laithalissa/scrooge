@@ -37,7 +37,7 @@ for name, cost in cost_of_gifts_given.items():
 table = generate_supertable(
     {'title': 'Cost of Purchases', 'data': cost_of_purchases},
     {'title': 'Cost of gifts given', 'data': cost_of_gifts_given},
-    {'title': 'Debt/Credit', 'data': debt_credit},
+    {'title': 'Debt/Credit', 'data': debt_credit}
 )
 
 render_report(table)
