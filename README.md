@@ -1,6 +1,4 @@
 # Scrooge
-# ![Scrooge](
-
 <img
   src="https://www.disneyclips.com/images3/images/scrooge-mcduck3.png"
   width="100px"
