@@ -1,4 +1,4 @@
-# Scrooge
+# ![Scrooge](https://www.disneyclips.com/images3/images/scrooge-mcduck3.png)
 
 ## Intro
 Scrooge is a simple collection of python functions to process Christmas
